@@ -1,0 +1,110 @@
+- hosts: kubernetes
+
+  become: true
+
+  vars:
+    kubernetes_version: '1.32'
+    kubernetes_allow_pods_on_control_plane: true
+    kubernetes_pod_network:
+      cni: 'calico'
+      cidr: '192.168.0.0/16'
+
+  pre_tasks: 
+    # Ensure ufw is installed
+    - name: Install ufw
+      package:
+        name: ufw
+        state: present
+
+    # Ensure br_netfilter module is loaded
+    - name: Ensure br_netfilter module is loaded
+      modprobe:
+        name: br_netfilter
+        state: present
+    
+    # Quick fix to ensure bridging is in place
+    - name: Ensure bridging is enabled
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
+        reload: yes
+    - name: Ensure IPv6 bridging is enabled
+      sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables
+        value: 1
+        state: present
+        reload: yes
+    - name: Ensure IP forwarding is enabled
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+        state: present
+        reload: yes
+
+    # Open necessary ports on the firewall using ufw
+    - name: Allow SSH port
+      ufw:
+        rule: allow
+        port: 22
+        proto: tcp
+    
+    - name: Allow Kubernetes API Server port
+      ufw:
+        rule: allow
+        port: 6443
+        proto: tcp
+
+    - name: Allow etcd ports
+      ufw:
+        rule: allow
+        port: 2379:2380
+        proto: tcp
+
+    - name: Allow Kubelet API port
+      ufw:
+        rule: allow
+        port: 10250
+        proto: tcp
+
+    - name: Allow NodePort Services range
+      ufw:
+        rule: allow
+        port: 30000:32767
+        proto: tcp
+
+    - name: Allow Kube-scheduler port
+      ufw:
+        rule: allow
+        port: 10251
+        proto: tcp
+
+    - name: Allow Kube-controller-manager port
+      ufw:
+        rule: allow
+        port: 10252
+        proto: tcp
+
+    - name: Allow Cluster DNS port
+      ufw:
+        rule: allow
+        port: 53
+        proto: udp
+
+    - name: Allow Metrics-server port
+      ufw:
+        rule: allow
+        port: 443
+        proto: tcp
+
+    - name: Enable ufw
+      ufw:
+        state: enabled
+
+    # Can't do this as a handler because handlers are only run at the end of the play
+    - name: Reload ufw
+      command: ufw reload
+
+  roles:
+    - geerlingguy.containerd
+    - geerlingguy.kubernetes

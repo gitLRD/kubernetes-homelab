@@ -1,6 +1,6 @@
+- import_playbook: patching.yml
+- import_playbook: kubernetes.yml
+
 - hosts: all
-  include_playbook: 
-    - patching.yml
-    - kubernetes.yml
   roles:
     - prometheus.prometheus.node_exporter

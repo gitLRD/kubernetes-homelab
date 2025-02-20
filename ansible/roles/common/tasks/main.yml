@@ -1,0 +1,17 @@
+---
+- name: Make sure node_exporter firewall port is open with firewalld
+  firewalld:
+    service: node_exporter
+    permanent: true
+    state: enabled
+    immediate: true
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['pkg_mgr'] == 'yum'
+  tags: node_exporter
+
+- name: Make sure node_exporter firewall port is open with ufw
+  ufw:
+    rule: allow
+    port: 9100
+    proto: tcp
+  when: ansible_facts['os_family'] == 'Debian' and ansible_facts['pkg_mgr'] == 'apt'
+  tags: node_exporter

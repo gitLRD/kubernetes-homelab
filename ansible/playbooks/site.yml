@@ -3,4 +3,5 @@
 
 - hosts: all
   roles:
+    - ../roles/common
     - prometheus.prometheus.node_exporter

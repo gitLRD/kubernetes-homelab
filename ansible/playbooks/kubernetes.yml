@@ -10,6 +10,17 @@
       cidr: '192.168.0.0/16'
 
   pre_tasks: 
+    - name: Disable swap
+      command: swapoff -a
+      become: true
+
+    - name: Remove swap entry from /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '^\s*([^#\s]+\s+){2}swap\s+'
+        replace: '# \g<0>'
+      become: true
+    
     # Ensure ufw is installed
     - name: Install ufw
       package:

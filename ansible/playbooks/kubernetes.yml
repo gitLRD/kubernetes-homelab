@@ -12,25 +12,25 @@
   pre_tasks: 
     # Ensure br_netfilter module is loaded
     - name: Ensure br_netfilter module is loaded
-      ansible.builtin.modprobe:
+      modprobe:
         name: br_netfilter
         state: present
     
     # Quick fix to ensure bridging is in place
     - name: Ensure bridging is enabled
-      ansible.builtin.sysctl:
+      sysctl:
         name: net.bridge.bridge-nf-call-iptables
         value: 1
         state: present
         reload: yes
     - name: Ensure IPv6 bridging is enabled
-      ansible.builtin.sysctl:
+      sysctl:
         name: net.bridge.bridge-nf-call-ip6tables
         value: 1
         state: present
         reload: yes
     - name: Ensure IP forwarding is enabled
-      ansible.builtin.sysctl:
+      sysctl:
         name: net.ipv4.ip_forward
         value: 1
         state: present
@@ -38,5 +38,4 @@
 
   roles:
     - geerlingguy.containerd
-
-- import_playbook: kubernetes_sigs.kubespray.cluster
+    - geerlingguy.kubernetes

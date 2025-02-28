@@ -1,7 +1,7 @@
 ---
 - name: Update all packages on all hosts
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Update all packages

@@ -1,5 +1,6 @@
 ---
 - name: Make sure node_exporter firewall port is open with firewalld
+  become: true
   firewalld:
     service: node_exporter
     permanent: true
@@ -9,6 +10,7 @@
   tags: node_exporter
 
 - name: Make sure node_exporter firewall port is open with ufw
+  become: true
   ufw:
     rule: allow
     port: 9100

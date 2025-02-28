@@ -4,6 +4,5 @@
 brew install gnu-tar
 
 # Install the required Ansible roles
-ansible-galaxy role install geerlingguy.containerd
-ansible-galaxy role install geerlingguy.kubernetes
-ansible-galaxy collection install prometheus.prometheus
+ansible-galaxy role install geerlingguy.containerd geerlingguy.kubernetes
+ansible-galaxy collection install community.general ansible.posix prometheus.prometheus kubernetes.core

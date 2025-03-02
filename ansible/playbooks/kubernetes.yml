@@ -38,4 +38,5 @@
 
   roles:
     - geerlingguy.containerd
-    - geerlingguy.kubernetes
+
+- import_playbook: kubernetes_sigs.kubespray.cluster

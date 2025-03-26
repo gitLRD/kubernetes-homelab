@@ -17,3 +17,6 @@
     proto: tcp
   when: ansible_facts['os_family'] == 'Debian' and ansible_facts['pkg_mgr'] == 'apt'
   tags: node_exporter
+
+- name: Include mounts.yml tasks
+  include_tasks: mounts.yml

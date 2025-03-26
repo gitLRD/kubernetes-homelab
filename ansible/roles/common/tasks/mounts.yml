@@ -1,0 +1,29 @@
+---
+  - name: Include mounts.yml vars
+    include_vars: vars/mounts.yml
+
+  - name: Install required packages
+    package:
+      name: 
+      - nfs-common
+      state: present
+    become: true
+  
+  - name: Make sure NAS mount points exist
+    file:
+      state: directory
+      path: "/mnt/{{ item.name }}"
+      owner: "{{ mount_point_owner }}"
+      group: "{{ mount_point_group }}"
+      mode: "{{ mount_point_mode }}"
+    become: true
+    loop: "{{ nas_volumes_and_mount_points }}"
+
+  - name: Mount NFS shares
+    mount:
+      src: "{{ nas_ip_address }}:{{ item.volume }}"
+      path: "/mnt/{{ item.name }}"
+      fstype: nfs
+      state: mounted
+    become: true
+    loop: "{{ nas_volumes_and_mount_points }}"

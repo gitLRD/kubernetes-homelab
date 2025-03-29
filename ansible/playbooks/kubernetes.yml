@@ -10,6 +10,15 @@
       cidr: '192.168.0.0/16'
 
   pre_tasks: 
+    - name: Make sure snap is installed
+      apt:
+        name: snapd
+        state: present
+    - name: Install helm using snap
+      snap:
+        name: helm
+        classic: yes
+        state: present
     # Ensure br_netfilter module is loaded
     - name: Ensure br_netfilter module is loaded
       modprobe:
@@ -74,6 +83,7 @@
         reboot_timeout: 300
       when: 
         - ansible_architecture in ['aarch64', 'armv7l']
+        - cgroups_update.changed
 
     - name: Verify cgroups are enabled
       command: cat /proc/cgroups
@@ -90,5 +100,14 @@
   #       name: ufw
   #       state: started
   #       enabled: yes
+    - name: Allow ports through ufw
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+        comment: "Allow {{ item }}"
+        state: enabled
+      with_items:
+        - 22
+        - 8080
 
 - import_playbook: kubernetes_sigs.kubespray.cluster
